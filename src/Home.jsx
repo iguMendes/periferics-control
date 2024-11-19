@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const Home = () => {
 
-  const [usuarios, setUsuarios] = useState(['LIVRE', 'EM USO']);
+  const [usuarios, setUsuarios] = useState(['LIVRE']);
 
   const adicionarFuncionario = (novoFuncionario) => {
     if (!usuarios.includes(novoFuncionario)) {

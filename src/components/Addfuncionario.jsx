@@ -6,7 +6,9 @@ const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
- 
+
+  const usuariosVisiveis = usuarios.filter(user => user !== 'LIVRE');
+
   const onSubmit = (data) => {
     const novoFuncionario = data.nome.trim();
     if (novoFuncionario) {
@@ -19,7 +21,7 @@ const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) 
     <div className="p-4">
       <button
         onClick={toggleModal}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        className="bg-blue-500 text-white px-4 py-2 rounded-md"
       >
         Gerenciar<br/> Funcionários
       </button>
@@ -47,10 +49,10 @@ const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) 
             <div className="mb-4">
               <h2 className="text-xl mb-2">Lista de Funcionários</h2>
               <ul className="list-disc pl-6">
-                {usuarios.length === 0 && (
+                {usuariosVisiveis.length === 0 && (
                   <p className="text-gray-500">Nenhum funcionário adicionado.</p>
                 )}
-                {usuarios.map((funcionario, index) => (
+                {usuariosVisiveis.map((funcionario, index) => (
                   <li key={index} className="flex justify-between items-center">
                     <span>{funcionario}</span>
                     <button
