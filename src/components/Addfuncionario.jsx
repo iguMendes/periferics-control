@@ -48,7 +48,7 @@ const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) 
 
             <div className="mb-4">
               <h2 className="text-xl mb-2">Lista de Funcionários</h2>
-              <ul className="list-disc pl-6">
+              <ul className="list-disc pl-6 max-h-60 overflow-y-auto"> {/* Adicionando overflow com altura máxima */}
                 {usuariosVisiveis.length === 0 && (
                   <p className="text-gray-500">Nenhum funcionário adicionado.</p>
                 )}
