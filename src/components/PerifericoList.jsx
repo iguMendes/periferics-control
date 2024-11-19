@@ -69,8 +69,7 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
                     value={periferico.usuario}
                     onChange={(e) => handleInputChange(e, index, "usuario")}
                     className={`border w-full px-2 py-1 rounded-full text-center
-                      ${periferico.usuario === "LIVRE" ? "bg-green-500 text-white" : ""}
-                      ${periferico.usuario === "EM USO" ? "bg-black text-white" : ""}`}
+                      ${periferico.usuario === "LIVRE" ? "bg-green-500 text-white" : ""}`}
                   >
                     <option value="">Selecione</option>
                     {usuarios.map((usuario, i) => (
