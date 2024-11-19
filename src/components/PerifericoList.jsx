@@ -14,7 +14,6 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
     },
   ]);
 
-  // Função para lidar com a edição dos campos
   const handleInputChange = (e, index, field) => {
     const value = e.target.value;
     const newPerifericos = [...perifericos];
@@ -22,7 +21,7 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
     setPerifericos(newPerifericos);
   };
 
-  // Função para adicionar um novo periférico à lista
+
   const addPeriferico = () => {
     setPerifericos([
       ...perifericos,
@@ -39,7 +38,7 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
     ]);
   };
 
-  // Função para deletar um periférico
+
   const handleDelete = (index) => {
     const newPerifericos = perifericos.filter((_, i) => i !== index);
     setPerifericos(newPerifericos);
@@ -48,7 +47,7 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
   return (
     <div className="w-full flex justify-center">
       <div className="w-fit border rounded mt-5 border-black p-4">
-        <h2 className="text-center text-black bg-zinc-300">{tipoPeriferico}</h2>
+        <h2 className="text-center font-bold text-black bg-zinc-300">{tipoPeriferico}</h2>
         <table className="table-auto border-collapse border mx-auto">
           <thead>
             <tr className="bg-gray-200">
@@ -69,7 +68,9 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
                   <select
                     value={periferico.usuario}
                     onChange={(e) => handleInputChange(e, index, "usuario")}
-                    className="border w-full px-2 py-1 rounded-full"
+                    className={`border w-full px-2 py-1 rounded-full text-center
+                      ${periferico.usuario === "LIVRE" ? "bg-green-500 text-white" : ""}
+                      ${periferico.usuario === "EM USO" ? "bg-black text-white" : ""}`}
                   >
                     <option value="">Selecione</option>
                     {usuarios.map((usuario, i) => (
