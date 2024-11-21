@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { obterFuncionariosFirestore } from "../utils/firebase";
 
-const PerifericoList = ({ tipoPeriferico, usuarios }) => {
+const PerifericoList = ({ tipoPeriferico }) => {
   const [perifericos, setPerifericos] = useState([
     {
       id: 1,
@@ -13,6 +14,18 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
       numSerie: "",
     },
   ]);
+  const [usuarios, setUsuarios] = useState([]); // Estado para armazenar os funcionários
+
+  // Função para buscar os funcionários do Firestore
+  useEffect(() => {
+    const fetchFuncionarios = async () => {
+      const funcionarios = await obterFuncionariosFirestore();
+      const nomesFuncionarios = funcionarios.map(funcionario => funcionario.nome); // Extrai apenas os nomes
+      setUsuarios(nomesFuncionarios); // Atualiza o estado com os nomes dos funcionários
+    };
+
+    fetchFuncionarios();
+  }, []);
 
   const handleInputChange = (e, index, field) => {
     const value = e.target.value;
@@ -20,7 +33,6 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
     newPerifericos[index][field] = value;
     setPerifericos(newPerifericos);
   };
-
 
   const addPeriferico = () => {
     setPerifericos([
@@ -37,7 +49,6 @@ const PerifericoList = ({ tipoPeriferico, usuarios }) => {
       },
     ]);
   };
-
 
   const handleDelete = (index) => {
     const newPerifericos = perifericos.filter((_, i) => i !== index);
