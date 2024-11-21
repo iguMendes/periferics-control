@@ -1,20 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import {
+  adicionarFuncionarioFirestore,
+  obterFuncionariosFirestore,
+  removerFuncionarioFirestore,
+} from "../utils/firebase";
 
-const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) => {
+const AddFuncionario = () => {
   const { register, handleSubmit, reset } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [usuarios, setUsuarios] = useState([]);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
-  const usuariosVisiveis = usuarios.filter(user => user !== 'LIVRE');
+  // Buscar funcionários do Firestore ao carregar
+  useEffect(() => {
+    const carregarFuncionarios = async () => {
+      const funcionarios = await obterFuncionariosFirestore();
+      setUsuarios(funcionarios);
+    };
+    carregarFuncionarios();
+  }, []);
 
-  const onSubmit = (data) => {
-    const novoFuncionario = data.nome.trim();
-    if (novoFuncionario) {
-      adicionarFuncionario(novoFuncionario);
+  // Adicionar funcionário
+  const onSubmit = async (data) => {
+    const nomeFuncionario = data.nome.trim();
+    if (nomeFuncionario) {
+      const id = await adicionarFuncionarioFirestore(nomeFuncionario);
+      setUsuarios((prev) => [...prev, { id, nome: nomeFuncionario }]);
       reset();
     }
+  };
+
+  // Remover funcionário
+  const removerFuncionario = async (idFuncionario) => {
+    await removerFuncionarioFirestore(idFuncionario);
+    setUsuarios((prev) => prev.filter((user) => user.id !== idFuncionario));
   };
 
   return (
@@ -23,7 +44,9 @@ const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) 
         onClick={toggleModal}
         className="bg-blue-500 text-white px-4 py-2 rounded-md"
       >
-        Gerenciar<br/> Funcionários
+        Gerenciar
+        <br />
+        Funcionários
       </button>
 
       {isModalOpen && (
@@ -31,6 +54,7 @@ const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) 
           <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
             <h1 className="text-2xl mb-4">Gerenciar Funcionários</h1>
 
+            {/* Adicionar novo funcionário */}
             <div className="mb-4">
               <input
                 type="text"
@@ -46,17 +70,23 @@ const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) 
               </button>
             </div>
 
+            {/* Listar funcionários */}
             <div className="mb-4">
               <h2 className="text-xl mb-2">Lista de Funcionários</h2>
-              <ul className="list-disc pl-6 max-h-60 overflow-y-auto"> {/* Adicionando overflow com altura máxima */}
-                {usuariosVisiveis.length === 0 && (
-                  <p className="text-gray-500">Nenhum funcionário adicionado.</p>
+              <ul className="list-disc pl-6 max-h-60 overflow-y-auto">
+                {usuarios.length === 0 && (
+                  <p className="text-gray-500">
+                    Nenhum funcionário adicionado.
+                  </p>
                 )}
-                {usuariosVisiveis.map((funcionario, index) => (
-                  <li key={index} className="flex justify-between items-center">
-                    <span>{funcionario}</span>
+                {usuarios.map((funcionario) => (
+                  <li
+                    key={funcionario.id}
+                    className="flex justify-between items-center"
+                  >
+                    <span>{funcionario.nome}</span>
                     <button
-                      onClick={() => removerFuncionario(funcionario)}
+                      onClick={() => removerFuncionario(funcionario.id)}
                       className="bg-red-500 text-white px-2 py-1 rounded mt-2"
                     >
                       Remover
@@ -66,6 +96,7 @@ const AddFuncionario = ({ adicionarFuncionario, usuarios, removerFuncionario }) 
               </ul>
             </div>
 
+            {/* Fechar modal */}
             <button
               onClick={toggleModal}
               className="bg-gray-500 text-white px-4 py-2 rounded w-full"
