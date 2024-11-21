@@ -1,17 +1,17 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, setDoc, deleteDoc, doc, query, where } from "firebase/firestore";
 
 // Your Firebase configuration object
 const firebaseConfig = {
-  apiKey: "AIzaSyDo7ecCP9SxSILdt5b_VXrC1k1TyNzFyxI",
-  authDomain: "perifericcontroller.firebaseapp.com",
-  projectId: "perifericcontroller",
-  storageBucket: "perifericcontroller.firebaseapp.com",
-  messagingSenderId: "784262780156",
-  appId: "1:784262780156:web:5cae30dee737241d28b379",
-  measurementId: "G-YERXE3JXF4"
-};
+    apiKey: "AIzaSyCblBU4w6qNzHwl07-6MRlfhIGWGgXaFRA",
+    authDomain: "controllerperifericos-3e9b2.firebaseapp.com",
+    projectId: "controllerperifericos-3e9b2",
+    storageBucket: "controllerperifericos-3e9b2.firebasestorage.app",
+    messagingSenderId: "801690815808",
+    appId: "1:801690815808:web:60a250147d7611d0ae7ea5",
+    measurementId: "G-M0RLLL03W9"
+  };
 
 // Inicialize o app Firebase e o Firestore
 const app = initializeApp(firebaseConfig);
@@ -53,5 +53,33 @@ export const removerFuncionarioFirestore = async (idFuncionario) => {
     console.error("Erro ao remover funcionário:", error);
   }
 };
+
+export const adicionarPerifericoFirestore = async (tipoPeriferico, periferico) => {
+  
+    try {
+      // Referência para o documento do tipo de periférico (como "computador")
+      const tipoPerifericoRef = doc(db, "perifericos", tipoPeriferico);
+  
+      // Agora acessamos a subcoleção "perifericos" dentro do documento "computador"
+      const perifericosRef = collection(tipoPerifericoRef, "perifericos");
+      
+      // Adiciona o periférico na subcoleção "perifericos"
+      await addDoc(perifericosRef, periferico);
+      console.log(`Periférico adicionado: ${JSON.stringify(periferico)}`);
+    } catch (error) {
+      console.error("Erro ao adicionar periférico:", error);
+      throw error;
+    }
+  };
+
+  export const obterPerifericosFirestore = async (tipoPeriferico) => {
+    const db = getFirestore();
+    const tipoPerifericoRef = doc(db, "perifericos", tipoPeriferico);
+    const perifericosRef = collection(tipoPerifericoRef, "perifericos");
+    const querySnapshot = await getDocs(perifericosRef);
+    const perifericos = querySnapshot.docs.map((doc) => doc.data());
+  
+    return perifericos;
+  };
 
 export { app, analytics, db };
