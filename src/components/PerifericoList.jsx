@@ -1,31 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { obterFuncionariosFirestore } from "../utils/firebase";
+import {
+  obterFuncionariosFirestore,
+  adicionarPerifericoFirestore,
+  obterPerifericosFirestore,
+} from "../utils/firebase";
 
 const PerifericoList = ({ tipoPeriferico }) => {
-  const [perifericos, setPerifericos] = useState([
-    {
-      id: 1,
-      usuario: "",
-      item: "",
-      modelo: "",
-      dataRevisao: "",
-      status: "",
-      observacoes: "",
-      numSerie: "",
-    },
-  ]);
-  const [usuarios, setUsuarios] = useState([]); // Estado para armazenar os funcionários
+  const [perifericos, setPerifericos] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
 
-  // Função para buscar os funcionários do Firestore
+  // Buscar funcionários
   useEffect(() => {
     const fetchFuncionarios = async () => {
       const funcionarios = await obterFuncionariosFirestore();
-      const nomesFuncionarios = funcionarios.map(funcionario => funcionario.nome); // Extrai apenas os nomes
-      setUsuarios(nomesFuncionarios); // Atualiza o estado com os nomes dos funcionários
+      const nomesFuncionarios = funcionarios.map(
+        (funcionario) => funcionario.nome
+      );
+      setUsuarios(nomesFuncionarios);
     };
 
     fetchFuncionarios();
   }, []);
+
+  // Buscar periféricos do banco
+  useEffect(() => {
+    const fetchPerifericos = async () => {
+      if (tipoPeriferico) {
+        try {
+          const perifericosData = await obterPerifericosFirestore(tipoPeriferico);
+          setPerifericos(perifericosData); // Definir o estado com os periféricos obtidos
+        } catch (error) {
+          console.error("Erro ao buscar periféricos:", error);
+        }
+      }
+    };
+
+    fetchPerifericos();
+  }, [tipoPeriferico]);// Recarregar quando o tipo de periférico mudar
 
   const handleInputChange = (e, index, field) => {
     const value = e.target.value;
@@ -55,10 +66,27 @@ const PerifericoList = ({ tipoPeriferico }) => {
     setPerifericos(newPerifericos);
   };
 
+  const salvarTodos = async () => {
+    try {
+      console.log("Iniciando o salvamento de periféricos...");
+      const salvarPromises = perifericos.map((periferico, index) => {
+        console.log(`Salvando periférico ${index + 1}:`, periferico);
+        return adicionarPerifericoFirestore(tipoPeriferico, periferico);
+      });
+      await Promise.all(salvarPromises);
+      alert("Periféricos salvos com sucesso!");
+    } catch (error) {
+      console.error("Erro ao salvar periféricos:", error);
+      alert("Erro ao salvar periféricos.");
+    }
+  };
+
   return (
     <div className="w-full flex justify-center">
       <div className="w-fit border rounded mt-5 border-black p-4">
-        <h2 className="text-center font-bold text-black bg-zinc-300">{tipoPeriferico}</h2>
+        <h2 className="text-center font-bold text-black bg-zinc-300">
+          {tipoPeriferico}
+        </h2>
         <table className="table-auto border-collapse border mx-auto">
           <thead>
             <tr className="bg-gray-200">
@@ -79,8 +107,7 @@ const PerifericoList = ({ tipoPeriferico }) => {
                   <select
                     value={periferico.usuario}
                     onChange={(e) => handleInputChange(e, index, "usuario")}
-                    className={`border w-full px-2 py-1 rounded-full text-center
-                      ${periferico.usuario === "LIVRE" ? "bg-green-500 text-white" : ""}`}
+                    className="border w-full px-2 py-1 rounded-full text-center"
                   >
                     <option value="">Selecione</option>
                     {usuarios.map((usuario, i) => (
@@ -112,18 +139,20 @@ const PerifericoList = ({ tipoPeriferico }) => {
                   <input
                     type="date"
                     value={periferico.dataRevisao}
-                    onChange={(e) => handleInputChange(e, index, "dataRevisao")}
+                    onChange={(e) =>
+                      handleInputChange(e, index, "dataRevisao")
+                    }
                     className="border w-full px-2 py-1 rounded"
                   />
                 </td>
-                <td className="border px-4 py-2 font-bold">
+                <td className="border px-4 py-2">
                   <select
                     value={periferico.status}
                     onChange={(e) => handleInputChange(e, index, "status")}
                     className={`border w-full text-center px-2 py-1 rounded-full 
-                    ${periferico.status === "funcionando" ? "bg-green-500 text-white" : ""}
-                    ${periferico.status === "defeituoso" ? "bg-red-500 text-white" : ""}
-                    ${periferico.status === "emUso" ? "bg-yellow-500 text-white" : ""}`}
+                      ${periferico.status === "funcionando" ? "bg-green-500 text-white" : ""}
+                      ${periferico.status === "defeituoso" ? "bg-red-500 text-white" : ""}
+                      ${periferico.status === "emUso" ? "bg-yellow-500 text-white" : ""}`}
                   >
                     <option value="">SELECIONE</option>
                     <option value="funcionando">FUNCIONANDO</option>
@@ -135,7 +164,9 @@ const PerifericoList = ({ tipoPeriferico }) => {
                   <input
                     type="text"
                     value={periferico.observacoes}
-                    onChange={(e) => handleInputChange(e, index, "observacoes")}
+                    onChange={(e) =>
+                      handleInputChange(e, index, "observacoes")
+                    }
                     placeholder="Observações"
                     className="border w-full px-2 py-1 rounded"
                   />
@@ -166,6 +197,12 @@ const PerifericoList = ({ tipoPeriferico }) => {
           className="mt-4 bg-blue-500 text-white rounded px-6 py-2"
         >
           Adicionar {tipoPeriferico}
+        </button>
+        <button
+          onClick={salvarTodos}
+          className="mt-4 ml-2 bg-green-500 text-white rounded px-6 py-2"
+        >
+          Salvar
         </button>
       </div>
     </div>

@@ -27,47 +27,47 @@ const Home = () => {
        />
 
       <PerifericoList
-        tipoPeriferico="COMPUTADORES" 
+        tipoPeriferico="computador" 
         usuarios={usuarios} 
        />
 
       <PerifericoList 
-        tipoPeriferico="MICROFONES" 
+        tipoPeriferico="microfone" 
         usuarios={usuarios} 
       />
 
       <PerifericoList 
-        tipoPeriferico="CÂMERAS" 
+        tipoPeriferico="cameras" 
         usuarios={usuarios} 
       />
 
       <PerifericoList 
-        tipoPeriferico="FONES DE OUVIDO" 
+        tipoPeriferico="foneDeOuvido" 
         usuarios={usuarios} 
       />
 
       <PerifericoList 
-        tipoPeriferico="MOUSE" 
+        tipoPeriferico="mouse" 
         usuarios={usuarios} 
       />
 
       <PerifericoList 
-        tipoPeriferico="TECLADO" 
+        tipoPeriferico="teclado" 
         usuarios={usuarios} 
       />
 
       <PerifericoList 
-        tipoPeriferico="MONITOR" 
+        tipoPeriferico="monitor" 
         usuarios={usuarios} 
       />
 
       <PerifericoList 
-        tipoPeriferico="MOUSEPAD" 
+        tipoPeriferico="mousepad" 
         usuarios={usuarios} 
       />
 
       <PerifericoList 
-        tipoPeriferico="OUTROS ITENS" 
+        tipoPeriferico="outrosItens" 
         usuarios={usuarios} 
       />
 
