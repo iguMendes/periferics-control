@@ -4,14 +4,14 @@ import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "fireb
 
 // Your Firebase configuration object
 const firebaseConfig = {
-  apiKey: "AIzaSyDo7ecCP9SxSILdt5b_VXrC1k1TyNzFyxI",
-  authDomain: "perifericcontroller.firebaseapp.com",
-  projectId: "perifericcontroller",
-  storageBucket: "perifericcontroller.firebaseapp.com",
-  messagingSenderId: "784262780156",
-  appId: "1:784262780156:web:5cae30dee737241d28b379",
-  measurementId: "G-YERXE3JXF4"
-};
+    apiKey: "AIzaSyCblBU4w6qNzHwl07-6MRlfhIGWGgXaFRA",
+    authDomain: "controllerperifericos-3e9b2.firebaseapp.com",
+    projectId: "controllerperifericos-3e9b2",
+    storageBucket: "controllerperifericos-3e9b2.firebasestorage.app",
+    messagingSenderId: "801690815808",
+    appId: "1:801690815808:web:60a250147d7611d0ae7ea5",
+    measurementId: "G-M0RLLL03W9"
+  };
 
 // Inicialize o app Firebase e o Firestore
 const app = initializeApp(firebaseConfig);
