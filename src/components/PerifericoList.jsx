@@ -3,6 +3,7 @@ import {
   obterFuncionariosFirestore,
   adicionarPerifericoFirestore,
   obterPerifericosFirestore,
+  removerPerifericoFirestore
 } from "../utils/firebase";
 
 const PerifericoList = ({ tipoPeriferico }) => {
@@ -28,15 +29,15 @@ const PerifericoList = ({ tipoPeriferico }) => {
       if (tipoPeriferico) {
         try {
           const perifericosData = await obterPerifericosFirestore(tipoPeriferico);
-          setPerifericos(perifericosData); // Definir o estado com os periféricos obtidos
+          console.log("Periféricos carregados:", perifericosData); // Log para depuração
+          setPerifericos(perifericosData);
         } catch (error) {
           console.error("Erro ao buscar periféricos:", error);
         }
       }
     };
-
     fetchPerifericos();
-  }, [tipoPeriferico]);// Recarregar quando o tipo de periférico mudar
+  }, [tipoPeriferico]);
 
   const handleInputChange = (e, index, field) => {
     const value = e.target.value;
@@ -49,7 +50,7 @@ const PerifericoList = ({ tipoPeriferico }) => {
     setPerifericos([
       ...perifericos,
       {
-        id: perifericos.length + 1,
+        id: "",
         usuario: "",
         item: "",
         modelo: "",
@@ -61,27 +62,43 @@ const PerifericoList = ({ tipoPeriferico }) => {
     ]);
   };
 
-  const handleDelete = (index) => {
-    const newPerifericos = perifericos.filter((_, i) => i !== index);
-    setPerifericos(newPerifericos);
+  const handleDelete = async (index) => {
+    const { numSerie } = perifericos[index];
+  
+    if (!numSerie) {
+      alert("Número de série inválido para deletar o periférico.");
+      console.error("Número de série inválido:", numSerie);
+      return;
+    }
+  
+    try {
+      await removerPerifericoFirestore(tipoPeriferico, numSerie);
+      setPerifericos((prev) => prev.filter((_, i) => i !== index));
+      alert("Periférico deletado com sucesso.");
+    } catch (error) {
+      console.error("Erro ao deletar periférico:", error);
+      alert("Erro ao deletar periférico.");
+    }
   };
-
   const salvarTodos = async () => {
     try {
       console.log("Iniciando o salvamento de periféricos...");
- 
+  
       const perifComDados = await obterPerifericosFirestore(tipoPeriferico);
-
+  
       const perifericosNovos = perifericos.filter((periferico) => {
         return !perifComDados.some((p) => p.numSerie === periferico.numSerie);
       });
+  
       if (perifericosNovos.length > 0) {
-        const salvarPromises = perifericosNovos.map((periferico) => {
+        const salvarPromises = perifericosNovos.map(async (periferico) => {
           console.log(`Salvando periférico:`, periferico);
-          return adicionarPerifericoFirestore(tipoPeriferico, periferico);
+          const docRef = await adicionarPerifericoFirestore(tipoPeriferico, periferico);
+          return { ...periferico, id: docRef.id };
         });
   
-        await Promise.all(salvarPromises);
+        const novosPerifericos = await Promise.all(salvarPromises);
+        setPerifericos((prev) => [...prev, ...novosPerifericos]);
         alert("Periféricos salvos com sucesso!");
       } else {
         alert("Nenhum periférico novo para salvar.");
