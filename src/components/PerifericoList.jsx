@@ -69,12 +69,23 @@ const PerifericoList = ({ tipoPeriferico }) => {
   const salvarTodos = async () => {
     try {
       console.log("Iniciando o salvamento de periféricos...");
-      const salvarPromises = perifericos.map((periferico, index) => {
-        console.log(`Salvando periférico ${index + 1}:`, periferico);
-        return adicionarPerifericoFirestore(tipoPeriferico, periferico);
+ 
+      const perifComDados = await obterPerifericosFirestore(tipoPeriferico);
+
+      const perifericosNovos = perifericos.filter((periferico) => {
+        return !perifComDados.some((p) => p.numSerie === periferico.numSerie);
       });
-      await Promise.all(salvarPromises);
-      alert("Periféricos salvos com sucesso!");
+      if (perifericosNovos.length > 0) {
+        const salvarPromises = perifericosNovos.map((periferico) => {
+          console.log(`Salvando periférico:`, periferico);
+          return adicionarPerifericoFirestore(tipoPeriferico, periferico);
+        });
+  
+        await Promise.all(salvarPromises);
+        alert("Periféricos salvos com sucesso!");
+      } else {
+        alert("Nenhum periférico novo para salvar.");
+      }
     } catch (error) {
       console.error("Erro ao salvar periféricos:", error);
       alert("Erro ao salvar periféricos.");
