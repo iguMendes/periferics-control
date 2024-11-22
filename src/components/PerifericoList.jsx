@@ -3,7 +3,7 @@ import {
   obterFuncionariosFirestore,
   adicionarPerifericoFirestore,
   obterPerifericosFirestore,
-  removerPerifericoFirestore
+  removerPerifericoFirestore,
 } from "../utils/firebase";
 
 const PerifericoList = ({ tipoPeriferico }) => {
@@ -28,7 +28,9 @@ const PerifericoList = ({ tipoPeriferico }) => {
     const fetchPerifericos = async () => {
       if (tipoPeriferico) {
         try {
-          const perifericosData = await obterPerifericosFirestore(tipoPeriferico);
+          const perifericosData = await obterPerifericosFirestore(
+            tipoPeriferico
+          );
           console.log("Periféricos carregados:", perifericosData); // Log para depuração
           setPerifericos(perifericosData);
         } catch (error) {
@@ -64,13 +66,13 @@ const PerifericoList = ({ tipoPeriferico }) => {
 
   const handleDelete = async (index) => {
     const { numSerie } = perifericos[index];
-  
+
     if (!numSerie) {
       alert("Número de série inválido para deletar o periférico.");
       console.error("Número de série inválido:", numSerie);
       return;
     }
-  
+
     try {
       await removerPerifericoFirestore(tipoPeriferico, numSerie);
       setPerifericos((prev) => prev.filter((_, i) => i !== index));
@@ -83,20 +85,23 @@ const PerifericoList = ({ tipoPeriferico }) => {
   const salvarTodos = async () => {
     try {
       console.log("Iniciando o salvamento de periféricos...");
-  
+
       const perifComDados = await obterPerifericosFirestore(tipoPeriferico);
-  
+
       const perifericosNovos = perifericos.filter((periferico) => {
         return !perifComDados.some((p) => p.numSerie === periferico.numSerie);
       });
-  
+
       if (perifericosNovos.length > 0) {
         const salvarPromises = perifericosNovos.map(async (periferico) => {
           console.log(`Salvando periférico:`, periferico);
-          const docRef = await adicionarPerifericoFirestore(tipoPeriferico, periferico);
+          const docRef = await adicionarPerifericoFirestore(
+            tipoPeriferico,
+            periferico
+          );
           return { ...periferico, id: docRef.id };
         });
-  
+
         const novosPerifericos = await Promise.all(salvarPromises);
         setPerifericos((prev) => [...prev, ...novosPerifericos]);
         alert("Periféricos salvos com sucesso!");
@@ -135,8 +140,8 @@ const PerifericoList = ({ tipoPeriferico }) => {
                   <select
                     value={periferico.usuario}
                     onChange={(e) => handleInputChange(e, index, "usuario")}
-                    className="border w-full px-2 py-1 rounded-full text-center"
-                  >
+                    className={`border w-full px-2 py-1 rounded-full text-center 
+      ${periferico.usuario === "LIVRE" ? "bg-green-500 text-white" : ""}`}>
                     <option value="">Selecione</option>
                     {usuarios.map((usuario, i) => (
                       <option key={i} value={usuario}>
@@ -167,9 +172,7 @@ const PerifericoList = ({ tipoPeriferico }) => {
                   <input
                     type="date"
                     value={periferico.dataRevisao}
-                    onChange={(e) =>
-                      handleInputChange(e, index, "dataRevisao")
-                    }
+                    onChange={(e) => handleInputChange(e, index, "dataRevisao")}
                     className="border w-full px-2 py-1 rounded"
                   />
                 </td>
@@ -178,9 +181,21 @@ const PerifericoList = ({ tipoPeriferico }) => {
                     value={periferico.status}
                     onChange={(e) => handleInputChange(e, index, "status")}
                     className={`border w-full text-center px-2 py-1 rounded-full 
-                      ${periferico.status === "funcionando" ? "bg-green-500 text-white" : ""}
-                      ${periferico.status === "defeituoso" ? "bg-red-500 text-white" : ""}
-                      ${periferico.status === "emUso" ? "bg-yellow-500 text-white" : ""}`}
+                      ${
+                        periferico.status === "funcionando"
+                          ? "bg-green-500 text-white"
+                          : ""
+                      }
+                      ${
+                        periferico.status === "defeituoso"
+                          ? "bg-red-500 text-white"
+                          : ""
+                      }
+                      ${
+                        periferico.status === "emUso"
+                          ? "bg-yellow-500 text-white"
+                          : ""
+                      }`}
                   >
                     <option value="">SELECIONE</option>
                     <option value="funcionando">FUNCIONANDO</option>
@@ -192,9 +207,7 @@ const PerifericoList = ({ tipoPeriferico }) => {
                   <input
                     type="text"
                     value={periferico.observacoes}
-                    onChange={(e) =>
-                      handleInputChange(e, index, "observacoes")
-                    }
+                    onChange={(e) => handleInputChange(e, index, "observacoes")}
                     placeholder="Observações"
                     className="border w-full px-2 py-1 rounded"
                   />
