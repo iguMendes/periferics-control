@@ -1,8 +1,17 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore, collection, addDoc, getDocs, setDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  setDoc, 
+  deleteDoc, 
+  doc, 
+  query, 
+  where, 
+            } from "firebase/firestore";
 
-// Your Firebase configuration object
 const firebaseConfig = {
     apiKey: "AIzaSyCblBU4w6qNzHwl07-6MRlfhIGWGgXaFRA",
     authDomain: "controllerperifericos-3e9b2.firebaseapp.com",
@@ -13,12 +22,10 @@ const firebaseConfig = {
     measurementId: "G-M0RLLL03W9"
   };
 
-// Inicialize o app Firebase e o Firestore
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const db = getFirestore(app); // Declare db aqui
+const db = getFirestore(app);
 
-// Função para adicionar funcionário
 export const adicionarFuncionarioFirestore = async (nomeFuncionario) => {
   try {
     const docRef = await addDoc(collection(db, "funcionarios"), {
@@ -73,13 +80,40 @@ export const adicionarPerifericoFirestore = async (tipoPeriferico, periferico) =
   };
 
   export const obterPerifericosFirestore = async (tipoPeriferico) => {
-    const db = getFirestore();
-    const tipoPerifericoRef = doc(db, "perifericos", tipoPeriferico);
-    const perifericosRef = collection(tipoPerifericoRef, "perifericos");
-    const querySnapshot = await getDocs(perifericosRef);
-    const perifericos = querySnapshot.docs.map((doc) => doc.data());
+    try {
+      const perifericosRef = collection(db, "perifericos", tipoPeriferico, "perifericos");
+      const querySnapshot = await getDocs(perifericosRef);
   
-    return perifericos;
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id, 
+        ...doc.data(),
+      }));
+    } catch (error) {
+      console.error("Erro ao obter periféricos:", error);
+      throw error;
+    }
+  };
+
+  export const removerPerifericoFirestore = async (tipoPeriferico, numSerie) => {
+    try {
+      // Referência para a subcoleção "perifericos"
+      const perifericosRef = collection(db, "perifericos", tipoPeriferico, "perifericos");
+      
+      // Busca o documento com base no campo "numSerie"
+      const q = query(perifericosRef, where("numSerie", "==", numSerie));
+      const querySnapshot = await getDocs(q);
+  
+      // Apaga todos os documentos encontrados
+      const deletePromises = querySnapshot.docs.map((doc) =>
+        deleteDoc(doc.ref)
+      );
+  
+      await Promise.all(deletePromises);
+      console.log(`Periférico com número de série ${numSerie} deletado com sucesso.`);
+    } catch (error) {
+      console.error("Erro ao deletar periférico:", error);
+      throw error;
+    }
   };
 
 export { app, analytics, db };
