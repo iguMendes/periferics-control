@@ -84,26 +84,32 @@ const PerifericoList = ({ tipoPeriferico }) => {
   };
   const salvarTodos = async () => {
     try {
-      console.log("Iniciando o salvamento de periféricos...");
-
       const perifComDados = await obterPerifericosFirestore(tipoPeriferico);
-
       const perifericosNovos = perifericos.filter((periferico) => {
         return !perifComDados.some((p) => p.numSerie === periferico.numSerie);
       });
-
+  
       if (perifericosNovos.length > 0) {
         const salvarPromises = perifericosNovos.map(async (periferico) => {
           console.log(`Salvando periférico:`, periferico);
-          const docRef = await adicionarPerifericoFirestore(
-            tipoPeriferico,
-            periferico
-          );
+  
+          const docRef = await adicionarPerifericoFirestore(tipoPeriferico, periferico);
           return { ...periferico, id: docRef.id };
         });
-
+  
         const novosPerifericos = await Promise.all(salvarPromises);
-        setPerifericos((prev) => [...prev, ...novosPerifericos]);
+  
+        // Filtra para garantir que não existam periféricos duplicados no estado
+        const perifericosAtualizados = [
+          ...perifericos,
+          ...novosPerifericos,
+        ].filter(
+          (value, index, self) =>
+            index === self.findIndex((t) => t.numSerie === value.numSerie)
+        );
+  
+        setPerifericos(perifericosAtualizados);
+  
         alert("Periféricos salvos com sucesso!");
       } else {
         alert("Nenhum periférico novo para salvar.");
