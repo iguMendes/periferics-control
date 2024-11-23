@@ -12,15 +12,16 @@ import {
   where, 
             } from "firebase/firestore";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyCblBU4w6qNzHwl07-6MRlfhIGWGgXaFRA",
-    authDomain: "controllerperifericos-3e9b2.firebaseapp.com",
-    projectId: "controllerperifericos-3e9b2",
-    storageBucket: "controllerperifericos-3e9b2.firebasestorage.app",
-    messagingSenderId: "801690815808",
-    appId: "1:801690815808:web:60a250147d7611d0ae7ea5",
-    measurementId: "G-M0RLLL03W9"
-  };
+ //produção
+ const firebaseConfig = {
+  apiKey: "AIzaSyDiXuh0vHLEbDba64qzCpYgFl1osHdrQWY",
+  authDomain: "controllerprod-78cd6.firebaseapp.com",
+  projectId: "controllerprod-78cd6",
+  storageBucket: "controllerprod-78cd6.firebasestorage.app",
+  messagingSenderId: "957537953637",
+  appId: "1:957537953637:web:b96e755e32d0c9a8cae38c",
+  measurementId: "G-TDZQ71V6XE"
+};
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
