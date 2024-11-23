@@ -62,22 +62,18 @@ export const removerFuncionarioFirestore = async (idFuncionario) => {
 };
 
 export const adicionarPerifericoFirestore = async (tipoPeriferico, periferico) => {
-  
-    try {
-      // Referência para o documento do tipo de periférico (como "computador")
-      const tipoPerifericoRef = doc(db, "perifericos", tipoPeriferico);
-  
-      // Agora acessamos a subcoleção "perifericos" dentro do documento "computador"
-      const perifericosRef = collection(tipoPerifericoRef, "perifericos");
-      
-      // Adiciona o periférico na subcoleção "perifericos"
-      await addDoc(perifericosRef, periferico);
-      console.log(`Periférico adicionado: ${JSON.stringify(periferico)}`);
-    } catch (error) {
-      console.error("Erro ao adicionar periférico:", error);
-      throw error;
-    }
-  };
+  try {
+    const tipoPerifericoRef = doc(db, "perifericos", tipoPeriferico);
+    const perifericosRef = collection(tipoPerifericoRef, "perifericos");
+    const docRef = doc(perifericosRef, periferico.numSerie);
+    await setDoc(docRef, periferico)
+    console.log(`Periférico adicionado com numSerie: ${periferico.numSerie}`);
+    return periferico; 
+  } catch (error) {
+    console.error("Erro ao adicionar periférico:", error);
+    throw error;
+  }
+};
 
   export const obterPerifericosFirestore = async (tipoPeriferico) => {
     try {
@@ -96,14 +92,9 @@ export const adicionarPerifericoFirestore = async (tipoPeriferico, periferico) =
 
   export const removerPerifericoFirestore = async (tipoPeriferico, numSerie) => {
     try {
-      // Referência para a subcoleção "perifericos"
       const perifericosRef = collection(db, "perifericos", tipoPeriferico, "perifericos");
-      
-      // Busca o documento com base no campo "numSerie"
       const q = query(perifericosRef, where("numSerie", "==", numSerie));
       const querySnapshot = await getDocs(q);
-  
-      // Apaga todos os documentos encontrados
       const deletePromises = querySnapshot.docs.map((doc) =>
         deleteDoc(doc.ref)
       );
