@@ -4,7 +4,7 @@ import {
   adicionarPerifericoFirestore,
   obterPerifericosFirestore,
   removerPerifericoFirestore,
-} from "../utils/firebase";
+} from "../../utils/firebase";
 
 const PerifericoList = ({ tipoPeriferico }) => {
   const [perifericos, setPerifericos] = useState([]);
@@ -84,6 +84,7 @@ const PerifericoList = ({ tipoPeriferico }) => {
   };
   const salvarTodos = async () => {
     try {
+      
       const perifComDados = await obterPerifericosFirestore(tipoPeriferico);
       const perifericosNovos = perifericos.filter((periferico) => {
         return !perifComDados.some((p) => p.numSerie === periferico.numSerie);

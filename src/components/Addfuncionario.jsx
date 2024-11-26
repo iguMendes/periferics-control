@@ -4,7 +4,7 @@ import {
   adicionarFuncionarioFirestore,
   obterFuncionariosFirestore,
   removerFuncionarioFirestore,
-} from "../utils/firebase";
+} from "../../utils/firebase";
 
 const AddFuncionario = () => {
   const { register, handleSubmit, reset } = useForm();
