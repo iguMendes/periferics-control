@@ -4,7 +4,7 @@ import {
   adicionarPerifericoFirestore,
   obterPerifericosFirestore,
   removerPerifericoFirestore,
-} from "../utils/firebase";
+} from "../../utils/firebase";
 
 const PerifericoList = ({ tipoPeriferico }) => {
   const [perifericos, setPerifericos] = useState([]);
