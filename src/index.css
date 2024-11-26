@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* index.css ou global.css */
+html {
+    font-size: 12px; /* Tamanho de fonte padrão para telas HD */
+  }
+  
+  @media (min-width: 1366px) {
+    html {
+      font-size: 12px; /* Para HD, use a fonte definida como hd */
+    }
+  }
+  
+  @media (min-width: 1920px) {
+    html {
+      font-size: 18px; /* Para FHD, use a fonte definida como fhd */
+    }
+  }
+  
