@@ -11,9 +11,6 @@ import {
   query,
   where,
 } from "firebase/firestore";
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
   authDomain: import.meta.env.VITE_AUTH_DOMAIN,
@@ -23,7 +20,9 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_APP_ID,
   measurementId: import.meta.env.VITE_MEASUREMENT_ID
 }
-
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getFirestore(app);
 export const adicionarFuncionarioFirestore = async (nomeFuncionario) => {
   try {
     const docRef = await addDoc(collection(db, "funcionarios"), {
