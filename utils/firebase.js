@@ -44,13 +44,15 @@ export const obterFuncionariosFirestore = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "funcionarios"));
     return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
+      id: doc.id, // ID aleatório do documento
+      ...doc.data(), // Campos do documento, como 'nome'
     }));
   } catch (error) {
     console.error("Erro ao obter funcionários:", error);
+    throw error;
   }
 };
+
 
 // Função para remover funcionário
 export const removerFuncionarioFirestore = async (idFuncionario) => {
@@ -104,6 +106,41 @@ export const removerPerifericoFirestore = async (tipoPeriferico, numSerie) => {
     console.log(`Periférico com número de série ${numSerie} deletado com sucesso.`);
   } catch (error) {
     console.error("Erro ao deletar periférico:", error);
+    throw error;
+  }
+};
+
+export const getPerifericosNome = async (nomeFuncionario) => {
+  try {
+    const categorias = ["cameras", "computador", "foneDeOuvido", "microfone","monitor", "mouse","mousepad","outrosItens", "teclado"]; // Subcoleções existentes
+    let perifericosDoUsuario = [];
+
+    for (const categoria of categorias) {
+      const perifericosRef = collection(
+        db,
+        "perifericos",
+        categoria,
+        "perifericos"
+      );
+
+      // Query para buscar documentos onde o campo "usuario" corresponde
+      const q = query(perifericosRef, where("usuario", "==", nomeFuncionario));
+      const querySnapshot = await getDocs(q);
+
+      // Adiciona os documentos encontrados à lista
+      perifericosDoUsuario = [
+        ...perifericosDoUsuario,
+        ...querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          categoria, // Inclui a categoria para identificar a origem
+          ...doc.data(),
+        })),
+      ];
+    }
+
+    return perifericosDoUsuario; // Retorna a lista de periféricos do usuário
+  } catch (error) {
+    console.error("Erro ao buscar periféricos por usuário:", error);
     throw error;
   }
 };
