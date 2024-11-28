@@ -4,12 +4,16 @@ import {
   adicionarFuncionarioFirestore,
   obterFuncionariosFirestore,
   removerFuncionarioFirestore,
+  obterPerifericosFirestore,
+  getPerifericosNome
 } from "../../utils/firebase";
 
 const AddFuncionario = () => {
   const { register, handleSubmit, reset } = useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [usuarios, setUsuarios] = useState([]);
+  const [perifericosFuncionario, setPerifericosFuncionario] = useState([]);
+  const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
@@ -24,10 +28,10 @@ const AddFuncionario = () => {
 
   // Adicionar funcionário
   const onSubmit = async (data) => {
-    const nomeFuncionario = data.nome.trim();
-    if (nomeFuncionario) {
-      const id = await adicionarFuncionarioFirestore(nomeFuncionario);
-      setUsuarios((prev) => [...prev, { id, nome: nomeFuncionario }]);
+    const nomesFuncionarios = data.nome.trim();
+    if (nomesFuncionarios) {
+      const id = await adicionarFuncionarioFirestore(nomesFuncionarios);
+      setUsuarios((prev) => [...prev, { id, nome: nomesFuncionarios }]);
       reset();
     }
   };
@@ -38,15 +42,24 @@ const AddFuncionario = () => {
     setUsuarios((prev) => prev.filter((user) => user.id !== idFuncionario));
   };
 
+  // Carregar periféricos relacionados ao funcionário
+  const carregarPerifericos = async (nomesFuncionarios) => {
+    try {
+      const perifericos = await getPerifericosNome(nomesFuncionarios);
+      setPerifericosFuncionario(perifericos);
+      setFuncionarioSelecionado(nomesFuncionarios);
+    } catch (error) {
+      console.error("Erro ao carregar periféricos:", error);
+    }
+  };
+
   return (
     <div className="p-4">
       <button
         onClick={toggleModal}
         className="bg-blue-500 text-white px-4 py-2 rounded-md"
       >
-        Gerenciar
-        <br />
-        Funcionários
+        Gerenciar Funcionários
       </button>
 
       {isModalOpen && (
@@ -75,9 +88,7 @@ const AddFuncionario = () => {
               <h2 className="text-xl mb-2">Lista de Funcionários</h2>
               <ul className="list-disc pl-6 max-h-60 overflow-y-auto">
                 {usuarios.length === 0 && (
-                  <p className="text-gray-500">
-                    Nenhum funcionário adicionado.
-                  </p>
+                  <p className="text-gray-500">Nenhum funcionário adicionado.</p>
                 )}
                 {usuarios.map((funcionario) => (
                   <li
@@ -86,7 +97,13 @@ const AddFuncionario = () => {
                   >
                     <span>{funcionario.nome}</span>
                     <button
-                      onClick={() => removerFuncionario(funcionario.id)}
+                      onClick={() => carregarPerifericos(funcionario.nome)}
+                      className="bg-blue-500 text-white px-2 py-1 rounded mt-2 mr-2"
+                    >
+                      Ver Periféricos
+                    </button>
+                    <button
+                      onClick={() => removerFuncionario(funcionario.nome)}
                       className="bg-red-500 text-white px-2 py-1 rounded mt-2"
                     >
                       Remover
@@ -95,6 +112,17 @@ const AddFuncionario = () => {
                 ))}
               </ul>
             </div>
+
+            {/* Exibir periféricos do funcionário selecionado */}
+            {perifericosFuncionario.length === 0 ? (
+              <p className="text-gray-500">Nenhum periférico.</p>
+            ) : (
+              perifericosFuncionario.map((periferico, index) => (
+                <li key={index}>
+                  {periferico.item} ({periferico.numSerie}) - Categoria: {periferico.categoria}
+                </li>
+              ))
+            )}
 
             {/* Fechar modal */}
             <button
