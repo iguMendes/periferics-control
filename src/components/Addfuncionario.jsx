@@ -109,6 +109,7 @@ const AddFuncionario = () => {
                         onClick={() => removerFuncionario(funcionario)}
                         className="bg-red-500 text-white px-2 py-1 rounded"
                       >
+                        
                         Remover
                       </button>
                     </div>
