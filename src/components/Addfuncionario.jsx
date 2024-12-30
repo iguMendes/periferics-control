@@ -37,9 +37,11 @@ const AddFuncionario = () => {
   };
 
   // Remover funcionário
-  const removerFuncionario = async (idFuncionario) => {
-    await removerFuncionarioFirestore(idFuncionario);
-    setUsuarios((prev) => prev.filter((user) => user.id !== idFuncionario));
+  const removerFuncionario = async (funcionario) => {
+    await removerFuncionarioFirestore(funcionario); // Exclui do Firestore
+    // Recarregar os funcionários para garantir que a lista esteja atualizada
+    const funcionariosAtualizados = await obterFuncionariosFirestore();
+    setUsuarios(funcionariosAtualizados); // Atualiza o estado com a lista de funcionários atualizada
   };
 
   // Carregar periféricos relacionados ao funcionário
@@ -93,21 +95,23 @@ const AddFuncionario = () => {
                 {usuarios.map((funcionario) => (
                   <li
                     key={funcionario.id}
-                    className="flex justify-between items-center"
+                    className="flex justify-between items-center mb-2"
                   >
                     <span>{funcionario.nome}</span>
-                    <button
-                      onClick={() => carregarPerifericos(funcionario.nome)}
-                      className="bg-blue-500 text-white px-2 py-1 rounded mt-2 mr-2"
-                    >
-                      Ver Periféricos
-                    </button>
-                    <button
-                      onClick={() => removerFuncionario(funcionario.nome)}
-                      className="bg-red-500 text-white px-2 py-1 rounded mt-2"
-                    >
-                      Remover
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => carregarPerifericos(funcionario.nome)}
+                        className="bg-blue-500 text-white px-2 py-1 rounded"
+                      >
+                        Ver Periféricos
+                      </button>
+                      <button
+                        onClick={() => removerFuncionario(funcionario)}
+                        className="bg-red-500 text-white px-2 py-1 rounded"
+                      >
+                        Remover
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -115,13 +119,15 @@ const AddFuncionario = () => {
 
             {/* Exibir periféricos do funcionário selecionado */}
             {perifericosFuncionario.length === 0 ? (
-              <p className="text-gray-500">Nenhum periférico.</p>
+              <p className="text-gray-500">NENHUM PERIFÉRICO.</p>
             ) : (
-              perifericosFuncionario.map((periferico, index) => (
-                <li key={index}>
-                  {periferico.item} ({periferico.numSerie}) - Categoria: {periferico.categoria}
-                </li>
-              ))
+              <ul className="overflow-auto max-h-40">
+                {perifericosFuncionario.map((periferico, index) => (
+                  <li className="flex w-fit border-t border-gray-600 pb-2" key={index}>
+                    ITEM: {periferico.item} - CATEGORIA: {periferico.categoria} - CÓDIGO: ({periferico.numSerie})
+                  </li>
+                ))}
+              </ul>
             )}
 
             {/* Fechar modal */}
