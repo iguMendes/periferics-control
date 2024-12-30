@@ -84,43 +84,29 @@ const PerifericoList = ({ tipoPeriferico }) => {
   };
   const salvarTodos = async () => {
     try {
-      
+      // Busca os periféricos já existentes no banco de dados
       const perifComDados = await obterPerifericosFirestore(tipoPeriferico);
-      const perifericosNovos = perifericos.filter((periferico) => {
-        return !perifComDados.some((p) => p.numSerie === periferico.numSerie);
+      
+      // Não há mais necessidade de filtrar os periféricos novos, já que queremos permitir duplicatas
+      const salvarPromises = perifericos.map(async (periferico) => {
+        console.log(`Salvando periférico:`, periferico);
+  
+        // Salva o periférico no Firestore, sem verificação de duplicação
+        const docRef = await adicionarPerifericoFirestore(tipoPeriferico, periferico);
+        return { ...periferico, id: docRef.id };
       });
   
-      if (perifericosNovos.length > 0) {
-        const salvarPromises = perifericosNovos.map(async (periferico) => {
-          console.log(`Salvando periférico:`, periferico);
+      const novosPerifericos = await Promise.all(salvarPromises);
   
-          const docRef = await adicionarPerifericoFirestore(tipoPeriferico, periferico);
-          return { ...periferico, id: docRef.id };
-        });
+      // Atualiza o estado com os periféricos recém adicionados
+      setPerifericos(novosPerifericos);
   
-        const novosPerifericos = await Promise.all(salvarPromises);
-  
-        // Filtra para garantir que não existam periféricos duplicados no estado
-        const perifericosAtualizados = [
-          ...perifericos,
-          ...novosPerifericos,
-        ].filter(
-          (value, index, self) =>
-            index === self.findIndex((t) => t.numSerie === value.numSerie)
-        );
-  
-        setPerifericos(perifericosAtualizados);
-  
-        alert("Periféricos salvos com sucesso!");
-      } else {
-        alert("Nenhum periférico novo para salvar.");
-      }
+      alert("Periféricos salvos com sucesso!");
     } catch (error) {
       console.error("Erro ao salvar periféricos:", error);
       alert("Erro ao salvar periféricos.");
     }
   };
-
   return (
     <div className="w-full flex justify-center">
       <div className="w-fit border rounded mt-5 border-black p-4">
