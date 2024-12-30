@@ -51,10 +51,14 @@ export const obterFuncionariosFirestore = async () => {
 
 
 // Função para remover funcionário
-export const removerFuncionarioFirestore = async (idFuncionario) => {
+export const removerFuncionarioFirestore = async (funcionario) => {
   try {
-    await deleteDoc(doc(db, "funcionarios", idFuncionario));
-    console.log("Funcionário removido com sucesso:", idFuncionario);
+    // Criação da referência do documento na coleção 'funcionarios'
+    const funcionarioDocRef = doc(db, "funcionarios", funcionario.id);
+
+    // Excluindo o documento
+    await deleteDoc(funcionarioDocRef);
+    console.log("Funcionário removido com sucesso:", funcionario.nome);
   } catch (error) {
     console.error("Erro ao remover funcionário:", error);
   }
