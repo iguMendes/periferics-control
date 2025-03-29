@@ -2,7 +2,7 @@ CONTROLE DE PERIFÉRICOS
 
 Criei este projeto vendo a necessidade da empresa onde trabalho;
 ela foi feita para substituir a listagem de periféricos atual feita com excel;
-com esse projeto, tudo que foi feito está em um banco de dados que é atualizado na hora conforme é adicionado o periférico;
+com esse projeto, tudo que foi feito está em um banco de dados que é atualizado em tempo real conforme é adicionado o periférico;
 
 MAS POR QUÊ DELE EXISTIR?
 
